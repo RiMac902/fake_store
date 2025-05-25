@@ -1,16 +1,2 @@
-# fake_store
-
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<img width="494" alt="Screenshot 2025-05-25 at 10 07 59 PM" src="https://github.com/user-attachments/assets/8723665b-ee18-442a-8396-6a2f8457a031" />
+<img width="492" alt="Screenshot 2025-05-25 at 10 08 19 PM" src="https://github.com/user-attachments/assets/bea715df-61e6-4084-b94a-9a2662226b6b" />
