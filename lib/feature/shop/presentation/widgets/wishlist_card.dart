@@ -59,7 +59,7 @@ class _WishlistCardState extends State<WishlistCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      AppText.title3(widget.title),
+                      AppText.title3(widget.title, maxLines: 1, overflow: TextOverflow.clip),
                       SizedBox(height: 12.h),
                       Text(
                         '\$${widget.price}',
@@ -68,6 +68,7 @@ class _WishlistCardState extends State<WishlistCard> {
                           fontWeight: FontWeight.w600,
                           color: Colors.black.withValues(alpha: 0.75),
                         ),
+                       
                       ),
                       SizedBox(height: 12.h),
                       SizedBox(

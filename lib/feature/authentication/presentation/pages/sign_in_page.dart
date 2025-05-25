@@ -55,6 +55,7 @@ class _SignInPageState extends State<SignInPage> {
         }
       },
       child: Scaffold(
+        backgroundColor: const Color(0xFFFFFFFF),
         appBar: const Navbar(),
         body: Form(
           key: _formKey,

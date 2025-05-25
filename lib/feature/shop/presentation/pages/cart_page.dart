@@ -1,7 +1,6 @@
 import 'package:fake_store/feature/authentication/presentation/bloc/auth/auth_bloc.dart' as auth;
 import 'package:fake_store/feature/shop/domain/entities/cart_entity.dart';
 import 'package:fake_store/feature/shop/domain/entities/product_entity.dart';
-import 'package:fake_store/feature/shop/domain/usecases/add_to_cart_usecase.dart';
 import 'package:fake_store/feature/shop/presentation/bloc/shop/shop_bloc.dart';
 import 'package:fake_store/feature/shop/presentation/widgets/cart_card.dart';
 import 'package:fake_store/feature/shop/presentation/widgets/checkout_bar.dart';
@@ -24,7 +23,6 @@ class _CartPageState extends State<CartPage> {
   @override
   void initState() {
     super.initState();
-    // Завантажуємо і кошики, і продукти
     context.read<ShopBloc>()
       ..add(const ShopEvent.getCarts())
       ..add(const ShopEvent.getProducts());
@@ -65,6 +63,8 @@ class _CartPageState extends State<CartPage> {
         },
         buildWhen: (previous, current) => 
           current is ProductsLoaded || 
+          current is CartsLoaded ||
+          current is CartLoaded ||
           current is CartUpdated || 
           current is CartRemoved,
         builder: (context, state) {
@@ -72,19 +72,19 @@ class _CartPageState extends State<CartPage> {
           if (state is Loading) return const Center(child: CircularProgressIndicator());
           if (state is Error) return Center(child: Text(state.message));
           
-          // Зберігаємо поточний кошик
           if (state is CartLoaded) {
             _currentCart = state.cart;
           } else if (state is CartsLoaded && state.carts.isNotEmpty) {
-            _currentCart = state.carts.first;
+            _currentCart = state.carts.firstWhere(
+              (cart) => cart.userId == 1,
+              orElse: () => state.carts.first,
+            );
           }
 
-          // Зберігаємо продукти
           if (state is ProductsLoaded) {
             _products = state.products;
           }
 
-          // Якщо у нас є кошик і продукти, показуємо контент
           if (_currentCart != null && _products != null) {
             return _CartContent(
               cart: _currentCart!,
@@ -92,12 +92,10 @@ class _CartPageState extends State<CartPage> {
             );
           }
 
-          // Якщо немає кошика
           if (_currentCart == null) {
             return const Center(child: Text('No cart found'));
           }
 
-          // Якщо є кошик, але продукти ще завантажуються
           return const Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -124,7 +122,9 @@ class _CartContent extends StatelessWidget {
   });
 
   void _removeFromCart(BuildContext context, String id) {
-    context.read<ShopBloc>().add(ShopEvent.removeFromCart(id));
+    context.read<ShopBloc>()
+      ..add(ShopEvent.removeFromCart(id))
+      ..add(const ShopEvent.getCarts());
   }
 
   void _updateQuantity(BuildContext context, int productId, int quantity) {
@@ -172,7 +172,7 @@ class _CartContent extends StatelessWidget {
           );
         }
       },
-      buildWhen: (previous, current) => false, // Не перебудовуємо контент при зміні стану
+      buildWhen: (previous, current) => false,
       builder: (context, state) {
         return Column(
           children: [

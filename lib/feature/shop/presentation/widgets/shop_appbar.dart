@@ -1,5 +1,6 @@
 import 'package:fake_store/core/components/app_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -51,7 +52,10 @@ class ShopAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
+      surfaceTintColor: Colors.transparent,
+      systemOverlayStyle: SystemUiOverlayStyle.dark,
       centerTitle: false,
+      shadowColor: Colors.transparent,
       titleSpacing: 24.w,
       toolbarHeight: height,
       title: Column(

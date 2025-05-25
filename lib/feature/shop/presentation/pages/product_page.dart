@@ -93,13 +93,14 @@ class ProductPage extends StatelessWidget {
       ),
       body: BlocListener<ShopBloc, ShopState>(
         listener: (context, state) {
-          if (state is CartLoaded) {
+          if (state is CartLoaded || state is CartUpdated) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Product added to cart'),
                 backgroundColor: Colors.green,
               ),
             );
+            context.read<ShopBloc>().add(const ShopEvent.getCarts());
             context.pop();
           }
           if (state is Error) {

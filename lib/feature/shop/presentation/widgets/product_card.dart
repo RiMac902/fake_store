@@ -1,11 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fake_store/core/components/app_text.dart';
-import 'package:fake_store/feature/shop/presentation/pages/product_page.dart';
+import 'package:fake_store/feature/shop/presentation/bloc/shop/shop_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProductCard extends StatefulWidget {
   final String id;
@@ -34,23 +35,25 @@ class ProductCard extends StatefulWidget {
 }
 
 class _ProductCardState extends State<ProductCard> {
-  bool isLiked = false;
-
-  void _navigateToProduct() {
-    context.push('/product/${widget.id}', extra: {
-      'title': widget.title,
-      'price': widget.price,
-      'image': widget.image,
-      'category': widget.category,
-      'rating': widget.rating,
-      'reviews': widget.reviews,
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final isWishlisted = context.select<ShopBloc, bool>(
+      (bloc) => bloc.isInWishlist(widget.id),
+    );
+
+    void navigateToProduct() {
+      context.push('/product/${widget.id}', extra: {
+        'title': widget.title,
+        'price': widget.price,
+        'image': widget.image,
+        'category': widget.category,
+        'rating': widget.rating,
+        'reviews': widget.reviews,
+      });
+    }
+
     return GestureDetector(
-      onTap: _navigateToProduct,
+      onTap: navigateToProduct,
       child: Stack(
         children: [
           Container(
@@ -134,16 +137,19 @@ class _ProductCardState extends State<ProductCard> {
             right: 16.w,
             child: GestureDetector(
               onTap: () {
-                setState(() {
-                  isLiked = !isLiked;
-                });
+                final bloc = context.read<ShopBloc>();
+                if (isWishlisted) {
+                  bloc.add(ShopEvent.removeFromWishlist(widget.id));
+                } else {
+                  bloc.add(ShopEvent.addToWishlist(widget.id));
+                }
               },
               child: SvgPicture.asset(
-                isLiked ? 'assets/svg/heart_filled.svg' : 'assets/svg/heart.svg',
+                isWishlisted ? 'assets/svg/heart_filled.svg' : 'assets/svg/heart.svg',
                 width: 20.w,
                 height: 20.h,
                 colorFilter: ColorFilter.mode(
-                  isLiked ? const Color(0xFFEB4335) : const Color(0xFFCBCBD4),
+                  isWishlisted ? const Color(0xFFEB4335) : const Color(0xFFCBCBD4),
                   BlendMode.srcIn,
                 ),
               ),

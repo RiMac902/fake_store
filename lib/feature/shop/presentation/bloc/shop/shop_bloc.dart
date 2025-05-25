@@ -118,7 +118,10 @@ class ShopBloc extends Bloc<ShopEvent, ShopState> {
     final result = await _addToCartUseCase(event.params);
     result.fold(
       (failure) => emit(ShopState.error(failure.message)),
-      (cart) => emit(ShopState.cartLoaded(cart)),
+      (cart) {
+        emit(ShopState.cartLoaded(cart));
+        add(const GetProducts());
+      },
     );
   }
 
@@ -142,8 +145,15 @@ class ShopBloc extends Bloc<ShopEvent, ShopState> {
       return;
     }
 
-    final currentCart = carts.first;
+    final currentCart = carts.where((cart) => cart.userId == 1).isNotEmpty
+        ? carts.firstWhere((cart) => cart.userId == 1)
+        : null;
     
+    if (currentCart == null) {
+      emit(const ShopState.error('No cart found'));
+      return;
+    }
+
     final updatedProducts = currentCart.products
         .where((product) => product.productId.toString() != event.id)
         .toList();
@@ -152,7 +162,10 @@ class ShopBloc extends Bloc<ShopEvent, ShopState> {
       final result = await _removeFromCartUseCase(event.id);
       result.fold(
         (failure) => emit(ShopState.error(failure.message)),
-        (_) => emit(const ShopState.cartRemoved()),
+        (_) {
+          emit(const ShopState.cartRemoved());
+          add(const GetProducts());
+        },
       );
       return;
     }
@@ -166,7 +179,10 @@ class ShopBloc extends Bloc<ShopEvent, ShopState> {
     final result = await _addToCartUseCase(params);
     result.fold(
       (failure) => emit(ShopState.error(failure.message)),
-      (cart) => emit(ShopState.cartUpdated(cart)),
+      (cart) {
+        emit(ShopState.cartUpdated(cart));
+        add(const GetProducts());
+      },
     );
   }
 
@@ -191,10 +207,18 @@ class ShopBloc extends Bloc<ShopEvent, ShopState> {
       return;
     }
 
-    final currentCart = carts.first;
+    final currentCart = carts.where((cart) => cart.userId == 1).isNotEmpty
+        ? carts.firstWhere((cart) => cart.userId == 1)
+        : null;
     
+    if (currentCart == null) {
+      emit(const ShopState.error('No cart found'));
+      return;
+    }
+
     if (event.quantity <= 0) {
       await _onRemoveFromCart(RemoveFromCart(event.productId.toString()), emit);
+      add(const GetProducts());
       return;
     }
 
@@ -217,7 +241,10 @@ class ShopBloc extends Bloc<ShopEvent, ShopState> {
     final result = await _addToCartUseCase(params);
     result.fold(
       (failure) => emit(ShopState.error(failure.message)),
-      (cart) => emit(ShopState.cartUpdated(cart)), 
+      (cart) {
+        emit(ShopState.cartUpdated(cart));
+        add(const GetProducts());
+      },
     );
   }
 

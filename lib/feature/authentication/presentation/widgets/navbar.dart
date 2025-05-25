@@ -1,5 +1,6 @@
 import 'package:fake_store/core/components/app_icon_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,6 +13,7 @@ class Navbar extends StatelessWidget implements PreferredSizeWidget {
         automaticallyImplyLeading: false,
         leadingWidth: 41.w + 22.w,
         toolbarHeight: 41.h,
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: Padding(
