@@ -1,22 +1,27 @@
 import 'package:fake_store/core/config/routes.dart';
+import 'package:fake_store/feature/shop/presentation/bloc/shop/shop_bloc.dart';
 import 'package:fake_store/injection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fake_store/feature/authentication/presentation/bloc/auth/auth_bloc.dart';
 import 'package:fake_store/core/config/bloc_observer.dart';
-import 'package:go_router/go_router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   configureDependencies();
   Bloc.observer = AppBlocObserver();
 
-  final authBloc = getIt<AuthBloc>();
-  authBloc.add(const AuthEvent.started());
   runApp(
-    BlocProvider<AuthBloc>(
-      create: (_) => authBloc,
+    MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthBloc>(
+          create: (_) => getIt<AuthBloc>()..add(const AuthEvent.started()),
+        ),
+        BlocProvider<ShopBloc>(
+          create: (_) => getIt<ShopBloc>()..add(const ShopEvent.started()),
+        ),
+      ],
       child: const MyApp(),
     ),
   );

@@ -1,14 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fake_store/core/components/app_text.dart';
-import 'package:fake_store/feature/shop/presentation/bloc/shop/shop_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ProductCard extends StatefulWidget {
+class ProductCard extends StatelessWidget {
   final String id;
   final String title;
   final String image;
@@ -17,7 +15,9 @@ class ProductCard extends StatefulWidget {
   final String rating;
   final String category;
   final int reviews;
-  
+  final bool isWishlisted;
+  final VoidCallback? onWishlistToggle;
+
   const ProductCard({
     super.key,
     required this.id,
@@ -28,27 +28,20 @@ class ProductCard extends StatefulWidget {
     required this.rating,
     required this.category,
     required this.reviews,
+    this.isWishlisted = false,
+    this.onWishlistToggle,
   });
 
   @override
-  State<ProductCard> createState() => _ProductCardState();
-}
-
-class _ProductCardState extends State<ProductCard> {
-  @override
   Widget build(BuildContext context) {
-    final isWishlisted = context.select<ShopBloc, bool>(
-      (bloc) => bloc.isInWishlist(widget.id),
-    );
-
     void navigateToProduct() {
-      context.push('/product/${widget.id}', extra: {
-        'title': widget.title,
-        'price': widget.price,
-        'image': widget.image,
-        'category': widget.category,
-        'rating': widget.rating,
-        'reviews': widget.reviews,
+      context.push('/product/$id', extra: {
+        'title': title,
+        'price': price,
+        'image': image,
+        'category': category,
+        'rating': rating,
+        'reviews': reviews,
       });
     }
 
@@ -68,7 +61,7 @@ class _ProductCardState extends State<ProductCard> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(4.r),
                     child: CachedNetworkImage(
-                      imageUrl: widget.image,
+                      imageUrl: image,
                       width: 70.w,
                       height: 70.h,
                       fit: BoxFit.cover,
@@ -83,13 +76,13 @@ class _ProductCardState extends State<ProductCard> {
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         AppText.title3(
-                          widget.title,
+                          title,
                           maxLines: 1,
                           overflow: TextOverflow.clip,
                         ),
                         SizedBox(height: 4.h),
                         AppText.subtitle2(
-                          widget.description,
+                          description,
                           maxLines: 1,
                           overflow: TextOverflow.clip,
                         ),
@@ -107,7 +100,7 @@ class _ProductCardState extends State<ProductCard> {
                             ),
                             SizedBox(width: 4.w),
                             Text(
-                              widget.rating,
+                              rating,
                               style: GoogleFonts.urbanist(
                                 fontSize: 12.sp,
                                 fontWeight: FontWeight.w600,
@@ -118,11 +111,11 @@ class _ProductCardState extends State<ProductCard> {
                         ),
                         SizedBox(height: 12.h),
                         Text(
-                          '\$${widget.price}',
+                          '24$price',
                           style: GoogleFonts.urbanist(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w600,
-                            color: Colors.black.withValues(alpha: 0.75),
+                            color: Colors.black.withAlpha(191),
                           ),
                         ),
                       ],
@@ -136,14 +129,7 @@ class _ProductCardState extends State<ProductCard> {
             top: 16.h,
             right: 16.w,
             child: GestureDetector(
-              onTap: () {
-                final bloc = context.read<ShopBloc>();
-                if (isWishlisted) {
-                  bloc.add(ShopEvent.removeFromWishlist(widget.id));
-                } else {
-                  bloc.add(ShopEvent.addToWishlist(widget.id));
-                }
-              },
+              onTap: onWishlistToggle,
               child: SvgPicture.asset(
                 isWishlisted ? 'assets/svg/heart_filled.svg' : 'assets/svg/heart.svg',
                 width: 20.w,

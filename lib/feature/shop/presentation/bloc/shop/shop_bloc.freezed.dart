@@ -274,10 +274,10 @@ as String,
 
 
 class AddToCart implements ShopEvent {
-  const AddToCart(this.params);
+  const AddToCart(this.productId);
   
 
- final  AddToCartParams params;
+ final  String productId;
 
 /// Create a copy of ShopEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -289,16 +289,16 @@ $AddToCartCopyWith<AddToCart> get copyWith => _$AddToCartCopyWithImpl<AddToCart>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AddToCart&&(identical(other.params, params) || other.params == params));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AddToCart&&(identical(other.productId, productId) || other.productId == productId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,params);
+int get hashCode => Object.hash(runtimeType,productId);
 
 @override
 String toString() {
-  return 'ShopEvent.addToCart(params: $params)';
+  return 'ShopEvent.addToCart(productId: $productId)';
 }
 
 
@@ -309,7 +309,7 @@ abstract mixin class $AddToCartCopyWith<$Res> implements $ShopEventCopyWith<$Res
   factory $AddToCartCopyWith(AddToCart value, $Res Function(AddToCart) _then) = _$AddToCartCopyWithImpl;
 @useResult
 $Res call({
- AddToCartParams params
+ String productId
 });
 
 
@@ -326,10 +326,10 @@ class _$AddToCartCopyWithImpl<$Res>
 
 /// Create a copy of ShopEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? params = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? productId = null,}) {
   return _then(AddToCart(
-null == params ? _self.params : params // ignore: cast_nullable_to_non_nullable
-as AddToCartParams,
+null == productId ? _self.productId : productId // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
@@ -340,10 +340,10 @@ as AddToCartParams,
 
 
 class RemoveFromCart implements ShopEvent {
-  const RemoveFromCart(this.id);
+  const RemoveFromCart(this.productId);
   
 
- final  String id;
+ final  String productId;
 
 /// Create a copy of ShopEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -355,16 +355,16 @@ $RemoveFromCartCopyWith<RemoveFromCart> get copyWith => _$RemoveFromCartCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RemoveFromCart&&(identical(other.id, id) || other.id == id));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RemoveFromCart&&(identical(other.productId, productId) || other.productId == productId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id);
+int get hashCode => Object.hash(runtimeType,productId);
 
 @override
 String toString() {
-  return 'ShopEvent.removeFromCart(id: $id)';
+  return 'ShopEvent.removeFromCart(productId: $productId)';
 }
 
 
@@ -375,7 +375,7 @@ abstract mixin class $RemoveFromCartCopyWith<$Res> implements $ShopEventCopyWith
   factory $RemoveFromCartCopyWith(RemoveFromCart value, $Res Function(RemoveFromCart) _then) = _$RemoveFromCartCopyWithImpl;
 @useResult
 $Res call({
- String id
+ String productId
 });
 
 
@@ -392,9 +392,9 @@ class _$RemoveFromCartCopyWithImpl<$Res>
 
 /// Create a copy of ShopEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? id = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? productId = null,}) {
   return _then(RemoveFromCart(
-null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+null == productId ? _self.productId : productId // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -635,145 +635,45 @@ String toString() {
 
 
 /// @nodoc
-mixin _$ShopState {
 
 
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ShopState);
-}
-
-
-@override
-int get hashCode => runtimeType.hashCode;
-
-@override
-String toString() {
-  return 'ShopState()';
-}
-
-
-}
-
-/// @nodoc
-class $ShopStateCopyWith<$Res>  {
-$ShopStateCopyWith(ShopState _, $Res Function(ShopState) __);
-}
-
-
-/// @nodoc
-
-
-class Initial implements ShopState {
-  const Initial();
+class IncreaseCartQuantity implements ShopEvent {
+  const IncreaseCartQuantity(this.productId);
   
 
+ final  String productId;
 
-
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Initial);
-}
-
-
-@override
-int get hashCode => runtimeType.hashCode;
-
-@override
-String toString() {
-  return 'ShopState.initial()';
-}
-
-
-}
-
-
-
-
-/// @nodoc
-
-
-class Loading implements ShopState {
-  const Loading();
-  
-
-
-
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Loading);
-}
-
-
-@override
-int get hashCode => runtimeType.hashCode;
-
-@override
-String toString() {
-  return 'ShopState.loading()';
-}
-
-
-}
-
-
-
-
-/// @nodoc
-
-
-class ProductsLoaded implements ShopState {
-  const ProductsLoaded(final  List<ProductEntity> products): _products = products;
-  
-
- final  List<ProductEntity> _products;
- List<ProductEntity> get products {
-  if (_products is EqualUnmodifiableListView) return _products;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_products);
-}
-
-
-/// Create a copy of ShopState
+/// Create a copy of ShopEvent
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$ProductsLoadedCopyWith<ProductsLoaded> get copyWith => _$ProductsLoadedCopyWithImpl<ProductsLoaded>(this, _$identity);
+$IncreaseCartQuantityCopyWith<IncreaseCartQuantity> get copyWith => _$IncreaseCartQuantityCopyWithImpl<IncreaseCartQuantity>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProductsLoaded&&const DeepCollectionEquality().equals(other._products, _products));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is IncreaseCartQuantity&&(identical(other.productId, productId) || other.productId == productId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_products));
+int get hashCode => Object.hash(runtimeType,productId);
 
 @override
 String toString() {
-  return 'ShopState.productsLoaded(products: $products)';
+  return 'ShopEvent.increaseCartQuantity(productId: $productId)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $ProductsLoadedCopyWith<$Res> implements $ShopStateCopyWith<$Res> {
-  factory $ProductsLoadedCopyWith(ProductsLoaded value, $Res Function(ProductsLoaded) _then) = _$ProductsLoadedCopyWithImpl;
+abstract mixin class $IncreaseCartQuantityCopyWith<$Res> implements $ShopEventCopyWith<$Res> {
+  factory $IncreaseCartQuantityCopyWith(IncreaseCartQuantity value, $Res Function(IncreaseCartQuantity) _then) = _$IncreaseCartQuantityCopyWithImpl;
 @useResult
 $Res call({
- List<ProductEntity> products
+ String productId
 });
 
 
@@ -781,597 +681,279 @@ $Res call({
 
 }
 /// @nodoc
-class _$ProductsLoadedCopyWithImpl<$Res>
-    implements $ProductsLoadedCopyWith<$Res> {
-  _$ProductsLoadedCopyWithImpl(this._self, this._then);
+class _$IncreaseCartQuantityCopyWithImpl<$Res>
+    implements $IncreaseCartQuantityCopyWith<$Res> {
+  _$IncreaseCartQuantityCopyWithImpl(this._self, this._then);
 
-  final ProductsLoaded _self;
-  final $Res Function(ProductsLoaded) _then;
+  final IncreaseCartQuantity _self;
+  final $Res Function(IncreaseCartQuantity) _then;
 
-/// Create a copy of ShopState
+/// Create a copy of ShopEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? products = null,}) {
-  return _then(ProductsLoaded(
-null == products ? _self._products : products // ignore: cast_nullable_to_non_nullable
-as List<ProductEntity>,
-  ));
-}
-
-
-}
-
-/// @nodoc
-
-
-class ProductLoaded implements ShopState {
-  const ProductLoaded(this.product);
-  
-
- final  ProductEntity product;
-
-/// Create a copy of ShopState
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$ProductLoadedCopyWith<ProductLoaded> get copyWith => _$ProductLoadedCopyWithImpl<ProductLoaded>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProductLoaded&&(identical(other.product, product) || other.product == product));
-}
-
-
-@override
-int get hashCode => Object.hash(runtimeType,product);
-
-@override
-String toString() {
-  return 'ShopState.productLoaded(product: $product)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $ProductLoadedCopyWith<$Res> implements $ShopStateCopyWith<$Res> {
-  factory $ProductLoadedCopyWith(ProductLoaded value, $Res Function(ProductLoaded) _then) = _$ProductLoadedCopyWithImpl;
-@useResult
-$Res call({
- ProductEntity product
-});
-
-
-$ProductEntityCopyWith<$Res> get product;
-
-}
-/// @nodoc
-class _$ProductLoadedCopyWithImpl<$Res>
-    implements $ProductLoadedCopyWith<$Res> {
-  _$ProductLoadedCopyWithImpl(this._self, this._then);
-
-  final ProductLoaded _self;
-  final $Res Function(ProductLoaded) _then;
-
-/// Create a copy of ShopState
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? product = null,}) {
-  return _then(ProductLoaded(
-null == product ? _self.product : product // ignore: cast_nullable_to_non_nullable
-as ProductEntity,
-  ));
-}
-
-/// Create a copy of ShopState
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$ProductEntityCopyWith<$Res> get product {
-  
-  return $ProductEntityCopyWith<$Res>(_self.product, (value) {
-    return _then(_self.copyWith(product: value));
-  });
-}
-}
-
-/// @nodoc
-
-
-class CartsLoaded implements ShopState {
-  const CartsLoaded(final  List<CartEntity> carts): _carts = carts;
-  
-
- final  List<CartEntity> _carts;
- List<CartEntity> get carts {
-  if (_carts is EqualUnmodifiableListView) return _carts;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_carts);
-}
-
-
-/// Create a copy of ShopState
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$CartsLoadedCopyWith<CartsLoaded> get copyWith => _$CartsLoadedCopyWithImpl<CartsLoaded>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CartsLoaded&&const DeepCollectionEquality().equals(other._carts, _carts));
-}
-
-
-@override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_carts));
-
-@override
-String toString() {
-  return 'ShopState.cartsLoaded(carts: $carts)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $CartsLoadedCopyWith<$Res> implements $ShopStateCopyWith<$Res> {
-  factory $CartsLoadedCopyWith(CartsLoaded value, $Res Function(CartsLoaded) _then) = _$CartsLoadedCopyWithImpl;
-@useResult
-$Res call({
- List<CartEntity> carts
-});
-
-
-
-
-}
-/// @nodoc
-class _$CartsLoadedCopyWithImpl<$Res>
-    implements $CartsLoadedCopyWith<$Res> {
-  _$CartsLoadedCopyWithImpl(this._self, this._then);
-
-  final CartsLoaded _self;
-  final $Res Function(CartsLoaded) _then;
-
-/// Create a copy of ShopState
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? carts = null,}) {
-  return _then(CartsLoaded(
-null == carts ? _self._carts : carts // ignore: cast_nullable_to_non_nullable
-as List<CartEntity>,
-  ));
-}
-
-
-}
-
-/// @nodoc
-
-
-class CartLoaded implements ShopState {
-  const CartLoaded(this.cart);
-  
-
- final  CartEntity cart;
-
-/// Create a copy of ShopState
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$CartLoadedCopyWith<CartLoaded> get copyWith => _$CartLoadedCopyWithImpl<CartLoaded>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CartLoaded&&(identical(other.cart, cart) || other.cart == cart));
-}
-
-
-@override
-int get hashCode => Object.hash(runtimeType,cart);
-
-@override
-String toString() {
-  return 'ShopState.cartLoaded(cart: $cart)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $CartLoadedCopyWith<$Res> implements $ShopStateCopyWith<$Res> {
-  factory $CartLoadedCopyWith(CartLoaded value, $Res Function(CartLoaded) _then) = _$CartLoadedCopyWithImpl;
-@useResult
-$Res call({
- CartEntity cart
-});
-
-
-$CartEntityCopyWith<$Res> get cart;
-
-}
-/// @nodoc
-class _$CartLoadedCopyWithImpl<$Res>
-    implements $CartLoadedCopyWith<$Res> {
-  _$CartLoadedCopyWithImpl(this._self, this._then);
-
-  final CartLoaded _self;
-  final $Res Function(CartLoaded) _then;
-
-/// Create a copy of ShopState
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? cart = null,}) {
-  return _then(CartLoaded(
-null == cart ? _self.cart : cart // ignore: cast_nullable_to_non_nullable
-as CartEntity,
-  ));
-}
-
-/// Create a copy of ShopState
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$CartEntityCopyWith<$Res> get cart {
-  
-  return $CartEntityCopyWith<$Res>(_self.cart, (value) {
-    return _then(_self.copyWith(cart: value));
-  });
-}
-}
-
-/// @nodoc
-
-
-class CartRemoved implements ShopState {
-  const CartRemoved();
-  
-
-
-
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CartRemoved);
-}
-
-
-@override
-int get hashCode => runtimeType.hashCode;
-
-@override
-String toString() {
-  return 'ShopState.cartRemoved()';
-}
-
-
-}
-
-
-
-
-/// @nodoc
-
-
-class CartUpdated implements ShopState {
-  const CartUpdated(this.cart);
-  
-
- final  CartEntity cart;
-
-/// Create a copy of ShopState
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$CartUpdatedCopyWith<CartUpdated> get copyWith => _$CartUpdatedCopyWithImpl<CartUpdated>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CartUpdated&&(identical(other.cart, cart) || other.cart == cart));
-}
-
-
-@override
-int get hashCode => Object.hash(runtimeType,cart);
-
-@override
-String toString() {
-  return 'ShopState.cartUpdated(cart: $cart)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $CartUpdatedCopyWith<$Res> implements $ShopStateCopyWith<$Res> {
-  factory $CartUpdatedCopyWith(CartUpdated value, $Res Function(CartUpdated) _then) = _$CartUpdatedCopyWithImpl;
-@useResult
-$Res call({
- CartEntity cart
-});
-
-
-$CartEntityCopyWith<$Res> get cart;
-
-}
-/// @nodoc
-class _$CartUpdatedCopyWithImpl<$Res>
-    implements $CartUpdatedCopyWith<$Res> {
-  _$CartUpdatedCopyWithImpl(this._self, this._then);
-
-  final CartUpdated _self;
-  final $Res Function(CartUpdated) _then;
-
-/// Create a copy of ShopState
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? cart = null,}) {
-  return _then(CartUpdated(
-null == cart ? _self.cart : cart // ignore: cast_nullable_to_non_nullable
-as CartEntity,
-  ));
-}
-
-/// Create a copy of ShopState
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$CartEntityCopyWith<$Res> get cart {
-  
-  return $CartEntityCopyWith<$Res>(_self.cart, (value) {
-    return _then(_self.copyWith(cart: value));
-  });
-}
-}
-
-/// @nodoc
-
-
-class CartQuantityUpdated implements ShopState {
-  const CartQuantityUpdated(this.cart);
-  
-
- final  CartEntity cart;
-
-/// Create a copy of ShopState
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$CartQuantityUpdatedCopyWith<CartQuantityUpdated> get copyWith => _$CartQuantityUpdatedCopyWithImpl<CartQuantityUpdated>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CartQuantityUpdated&&(identical(other.cart, cart) || other.cart == cart));
-}
-
-
-@override
-int get hashCode => Object.hash(runtimeType,cart);
-
-@override
-String toString() {
-  return 'ShopState.cartQuantityUpdated(cart: $cart)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $CartQuantityUpdatedCopyWith<$Res> implements $ShopStateCopyWith<$Res> {
-  factory $CartQuantityUpdatedCopyWith(CartQuantityUpdated value, $Res Function(CartQuantityUpdated) _then) = _$CartQuantityUpdatedCopyWithImpl;
-@useResult
-$Res call({
- CartEntity cart
-});
-
-
-$CartEntityCopyWith<$Res> get cart;
-
-}
-/// @nodoc
-class _$CartQuantityUpdatedCopyWithImpl<$Res>
-    implements $CartQuantityUpdatedCopyWith<$Res> {
-  _$CartQuantityUpdatedCopyWithImpl(this._self, this._then);
-
-  final CartQuantityUpdated _self;
-  final $Res Function(CartQuantityUpdated) _then;
-
-/// Create a copy of ShopState
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? cart = null,}) {
-  return _then(CartQuantityUpdated(
-null == cart ? _self.cart : cart // ignore: cast_nullable_to_non_nullable
-as CartEntity,
-  ));
-}
-
-/// Create a copy of ShopState
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$CartEntityCopyWith<$Res> get cart {
-  
-  return $CartEntityCopyWith<$Res>(_self.cart, (value) {
-    return _then(_self.copyWith(cart: value));
-  });
-}
-}
-
-/// @nodoc
-
-
-class WishlistLoaded implements ShopState {
-  const WishlistLoaded(final  List<ProductEntity> products): _products = products;
-  
-
- final  List<ProductEntity> _products;
- List<ProductEntity> get products {
-  if (_products is EqualUnmodifiableListView) return _products;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_products);
-}
-
-
-/// Create a copy of ShopState
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$WishlistLoadedCopyWith<WishlistLoaded> get copyWith => _$WishlistLoadedCopyWithImpl<WishlistLoaded>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WishlistLoaded&&const DeepCollectionEquality().equals(other._products, _products));
-}
-
-
-@override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_products));
-
-@override
-String toString() {
-  return 'ShopState.wishlistLoaded(products: $products)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $WishlistLoadedCopyWith<$Res> implements $ShopStateCopyWith<$Res> {
-  factory $WishlistLoadedCopyWith(WishlistLoaded value, $Res Function(WishlistLoaded) _then) = _$WishlistLoadedCopyWithImpl;
-@useResult
-$Res call({
- List<ProductEntity> products
-});
-
-
-
-
-}
-/// @nodoc
-class _$WishlistLoadedCopyWithImpl<$Res>
-    implements $WishlistLoadedCopyWith<$Res> {
-  _$WishlistLoadedCopyWithImpl(this._self, this._then);
-
-  final WishlistLoaded _self;
-  final $Res Function(WishlistLoaded) _then;
-
-/// Create a copy of ShopState
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? products = null,}) {
-  return _then(WishlistLoaded(
-null == products ? _self._products : products // ignore: cast_nullable_to_non_nullable
-as List<ProductEntity>,
-  ));
-}
-
-
-}
-
-/// @nodoc
-
-
-class WishlistUpdated implements ShopState {
-  const WishlistUpdated();
-  
-
-
-
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WishlistUpdated);
-}
-
-
-@override
-int get hashCode => runtimeType.hashCode;
-
-@override
-String toString() {
-  return 'ShopState.wishlistUpdated()';
-}
-
-
-}
-
-
-
-
-/// @nodoc
-
-
-class Error implements ShopState {
-  const Error(this.message);
-  
-
- final  String message;
-
-/// Create a copy of ShopState
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$ErrorCopyWith<Error> get copyWith => _$ErrorCopyWithImpl<Error>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Error&&(identical(other.message, message) || other.message == message));
-}
-
-
-@override
-int get hashCode => Object.hash(runtimeType,message);
-
-@override
-String toString() {
-  return 'ShopState.error(message: $message)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $ErrorCopyWith<$Res> implements $ShopStateCopyWith<$Res> {
-  factory $ErrorCopyWith(Error value, $Res Function(Error) _then) = _$ErrorCopyWithImpl;
-@useResult
-$Res call({
- String message
-});
-
-
-
-
-}
-/// @nodoc
-class _$ErrorCopyWithImpl<$Res>
-    implements $ErrorCopyWith<$Res> {
-  _$ErrorCopyWithImpl(this._self, this._then);
-
-  final Error _self;
-  final $Res Function(Error) _then;
-
-/// Create a copy of ShopState
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? message = null,}) {
-  return _then(Error(
-null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+@pragma('vm:prefer-inline') $Res call({Object? productId = null,}) {
+  return _then(IncreaseCartQuantity(
+null == productId ? _self.productId : productId // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
 
 
+}
+
+/// @nodoc
+
+
+class DecreaseCartQuantity implements ShopEvent {
+  const DecreaseCartQuantity(this.productId);
+  
+
+ final  String productId;
+
+/// Create a copy of ShopEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$DecreaseCartQuantityCopyWith<DecreaseCartQuantity> get copyWith => _$DecreaseCartQuantityCopyWithImpl<DecreaseCartQuantity>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DecreaseCartQuantity&&(identical(other.productId, productId) || other.productId == productId));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,productId);
+
+@override
+String toString() {
+  return 'ShopEvent.decreaseCartQuantity(productId: $productId)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $DecreaseCartQuantityCopyWith<$Res> implements $ShopEventCopyWith<$Res> {
+  factory $DecreaseCartQuantityCopyWith(DecreaseCartQuantity value, $Res Function(DecreaseCartQuantity) _then) = _$DecreaseCartQuantityCopyWithImpl;
+@useResult
+$Res call({
+ String productId
+});
+
+
+
+
+}
+/// @nodoc
+class _$DecreaseCartQuantityCopyWithImpl<$Res>
+    implements $DecreaseCartQuantityCopyWith<$Res> {
+  _$DecreaseCartQuantityCopyWithImpl(this._self, this._then);
+
+  final DecreaseCartQuantity _self;
+  final $Res Function(DecreaseCartQuantity) _then;
+
+/// Create a copy of ShopEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? productId = null,}) {
+  return _then(DecreaseCartQuantity(
+null == productId ? _self.productId : productId // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+mixin _$ShopState {
+
+ bool get isLoading; List<ProductUiModel> get products; ProductUiModel? get product; List<CartItem> get cart; List<ProductUiModel> get wishlist; String? get productsError; String? get cartError; String? get wishlistError;
+/// Create a copy of ShopState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ShopStateCopyWith<ShopState> get copyWith => _$ShopStateCopyWithImpl<ShopState>(this as ShopState, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ShopState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&const DeepCollectionEquality().equals(other.products, products)&&(identical(other.product, product) || other.product == product)&&const DeepCollectionEquality().equals(other.cart, cart)&&const DeepCollectionEquality().equals(other.wishlist, wishlist)&&(identical(other.productsError, productsError) || other.productsError == productsError)&&(identical(other.cartError, cartError) || other.cartError == cartError)&&(identical(other.wishlistError, wishlistError) || other.wishlistError == wishlistError));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,isLoading,const DeepCollectionEquality().hash(products),product,const DeepCollectionEquality().hash(cart),const DeepCollectionEquality().hash(wishlist),productsError,cartError,wishlistError);
+
+@override
+String toString() {
+  return 'ShopState(isLoading: $isLoading, products: $products, product: $product, cart: $cart, wishlist: $wishlist, productsError: $productsError, cartError: $cartError, wishlistError: $wishlistError)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ShopStateCopyWith<$Res>  {
+  factory $ShopStateCopyWith(ShopState value, $Res Function(ShopState) _then) = _$ShopStateCopyWithImpl;
+@useResult
+$Res call({
+ bool isLoading, List<ProductUiModel> products, ProductUiModel? product, List<CartItem> cart, List<ProductUiModel> wishlist, String? productsError, String? cartError, String? wishlistError
+});
+
+
+$ProductUiModelCopyWith<$Res>? get product;
+
+}
+/// @nodoc
+class _$ShopStateCopyWithImpl<$Res>
+    implements $ShopStateCopyWith<$Res> {
+  _$ShopStateCopyWithImpl(this._self, this._then);
+
+  final ShopState _self;
+  final $Res Function(ShopState) _then;
+
+/// Create a copy of ShopState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? products = null,Object? product = freezed,Object? cart = null,Object? wishlist = null,Object? productsError = freezed,Object? cartError = freezed,Object? wishlistError = freezed,}) {
+  return _then(_self.copyWith(
+isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+as bool,products: null == products ? _self.products : products // ignore: cast_nullable_to_non_nullable
+as List<ProductUiModel>,product: freezed == product ? _self.product : product // ignore: cast_nullable_to_non_nullable
+as ProductUiModel?,cart: null == cart ? _self.cart : cart // ignore: cast_nullable_to_non_nullable
+as List<CartItem>,wishlist: null == wishlist ? _self.wishlist : wishlist // ignore: cast_nullable_to_non_nullable
+as List<ProductUiModel>,productsError: freezed == productsError ? _self.productsError : productsError // ignore: cast_nullable_to_non_nullable
+as String?,cartError: freezed == cartError ? _self.cartError : cartError // ignore: cast_nullable_to_non_nullable
+as String?,wishlistError: freezed == wishlistError ? _self.wishlistError : wishlistError // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+/// Create a copy of ShopState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ProductUiModelCopyWith<$Res>? get product {
+    if (_self.product == null) {
+    return null;
+  }
+
+  return $ProductUiModelCopyWith<$Res>(_self.product!, (value) {
+    return _then(_self.copyWith(product: value));
+  });
+}
+}
+
+
+/// @nodoc
+
+
+class _ShopState implements ShopState {
+  const _ShopState({this.isLoading = false, final  List<ProductUiModel> products = const [], this.product, final  List<CartItem> cart = const [], final  List<ProductUiModel> wishlist = const [], this.productsError, this.cartError, this.wishlistError}): _products = products,_cart = cart,_wishlist = wishlist;
+  
+
+@override@JsonKey() final  bool isLoading;
+ final  List<ProductUiModel> _products;
+@override@JsonKey() List<ProductUiModel> get products {
+  if (_products is EqualUnmodifiableListView) return _products;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_products);
+}
+
+@override final  ProductUiModel? product;
+ final  List<CartItem> _cart;
+@override@JsonKey() List<CartItem> get cart {
+  if (_cart is EqualUnmodifiableListView) return _cart;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_cart);
+}
+
+ final  List<ProductUiModel> _wishlist;
+@override@JsonKey() List<ProductUiModel> get wishlist {
+  if (_wishlist is EqualUnmodifiableListView) return _wishlist;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_wishlist);
+}
+
+@override final  String? productsError;
+@override final  String? cartError;
+@override final  String? wishlistError;
+
+/// Create a copy of ShopState
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ShopStateCopyWith<_ShopState> get copyWith => __$ShopStateCopyWithImpl<_ShopState>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ShopState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&const DeepCollectionEquality().equals(other._products, _products)&&(identical(other.product, product) || other.product == product)&&const DeepCollectionEquality().equals(other._cart, _cart)&&const DeepCollectionEquality().equals(other._wishlist, _wishlist)&&(identical(other.productsError, productsError) || other.productsError == productsError)&&(identical(other.cartError, cartError) || other.cartError == cartError)&&(identical(other.wishlistError, wishlistError) || other.wishlistError == wishlistError));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,isLoading,const DeepCollectionEquality().hash(_products),product,const DeepCollectionEquality().hash(_cart),const DeepCollectionEquality().hash(_wishlist),productsError,cartError,wishlistError);
+
+@override
+String toString() {
+  return 'ShopState(isLoading: $isLoading, products: $products, product: $product, cart: $cart, wishlist: $wishlist, productsError: $productsError, cartError: $cartError, wishlistError: $wishlistError)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ShopStateCopyWith<$Res> implements $ShopStateCopyWith<$Res> {
+  factory _$ShopStateCopyWith(_ShopState value, $Res Function(_ShopState) _then) = __$ShopStateCopyWithImpl;
+@override @useResult
+$Res call({
+ bool isLoading, List<ProductUiModel> products, ProductUiModel? product, List<CartItem> cart, List<ProductUiModel> wishlist, String? productsError, String? cartError, String? wishlistError
+});
+
+
+@override $ProductUiModelCopyWith<$Res>? get product;
+
+}
+/// @nodoc
+class __$ShopStateCopyWithImpl<$Res>
+    implements _$ShopStateCopyWith<$Res> {
+  __$ShopStateCopyWithImpl(this._self, this._then);
+
+  final _ShopState _self;
+  final $Res Function(_ShopState) _then;
+
+/// Create a copy of ShopState
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? products = null,Object? product = freezed,Object? cart = null,Object? wishlist = null,Object? productsError = freezed,Object? cartError = freezed,Object? wishlistError = freezed,}) {
+  return _then(_ShopState(
+isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+as bool,products: null == products ? _self._products : products // ignore: cast_nullable_to_non_nullable
+as List<ProductUiModel>,product: freezed == product ? _self.product : product // ignore: cast_nullable_to_non_nullable
+as ProductUiModel?,cart: null == cart ? _self._cart : cart // ignore: cast_nullable_to_non_nullable
+as List<CartItem>,wishlist: null == wishlist ? _self._wishlist : wishlist // ignore: cast_nullable_to_non_nullable
+as List<ProductUiModel>,productsError: freezed == productsError ? _self.productsError : productsError // ignore: cast_nullable_to_non_nullable
+as String?,cartError: freezed == cartError ? _self.cartError : cartError // ignore: cast_nullable_to_non_nullable
+as String?,wishlistError: freezed == wishlistError ? _self.wishlistError : wishlistError // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+/// Create a copy of ShopState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ProductUiModelCopyWith<$Res>? get product {
+    if (_self.product == null) {
+    return null;
+  }
+
+  return $ProductUiModelCopyWith<$Res>(_self.product!, (value) {
+    return _then(_self.copyWith(product: value));
+  });
+}
 }
 
 // dart format on

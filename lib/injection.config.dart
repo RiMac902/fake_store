@@ -26,7 +26,8 @@ import 'feature/authentication/domain/usecases/is_logged_in_usecase.dart'
 import 'feature/authentication/domain/usecases/logout_usecase.dart' as _i14;
 import 'feature/authentication/domain/usecases/signin_usecase.dart' as _i477;
 import 'feature/authentication/presentation/bloc/auth/auth_bloc.dart' as _i561;
-import 'feature/shop/data/datasources/shop_datasource.dart' as _i185;
+import 'feature/shop/data/datasources/local_shop_datasource.dart' as _i951;
+import 'feature/shop/data/datasources/remote_shop_datasource.dart' as _i231;
 import 'feature/shop/data/repositories/auth_repositories_imp.dart' as _i147;
 import 'feature/shop/domain/repositories/shop_repositories.dart' as _i1036;
 import 'feature/shop/domain/usecases/add_to_cart_usecase.dart' as _i360;
@@ -48,29 +49,24 @@ extension GetItInjectableX on _i174.GetIt {
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final modules = _$Modules();
-    gh.singletonAsync<_i460.SharedPreferences>(() => modules.sharedPreferences);
+    gh.singletonAsync<_i460.SharedPreferences>(() => modules.prefs);
     gh.singleton<_i558.FlutterSecureStorage>(() => modules.secureStorage);
-    gh.singleton<_i45.DioClient>(
-      () => _i45.DioClient(gh<_i558.FlutterSecureStorage>()),
-    );
-    gh.factoryAsync<_i185.ShopDataSource>(
-      () async => _i185.ShopDataSourceImpl(
-        gh<_i45.DioClient>(),
+    gh.factoryAsync<_i951.LocalShopDataSource>(
+      () async => _i951.LocalShopDataSourceImpl(
         await getAsync<_i460.SharedPreferences>(),
       ),
     );
-    gh.factory<_i775.AuthDataSource>(
-      () => _i775.AuthDataSourceImpl(
-        gh<_i45.DioClient>(),
-        gh<_i558.FlutterSecureStorage>(),
-      ),
+    gh.factory<_i231.RemoteShopDataSource>(
+      () => _i231.RemoteShopDataSourceImpl(),
+    );
+    gh.singleton<_i45.DioClient>(
+      () => _i45.DioClient(gh<_i558.FlutterSecureStorage>()),
     );
     gh.factoryAsync<_i1036.ShopRepository>(
-      () async =>
-          _i147.ShopRepositoryImpl(await getAsync<_i185.ShopDataSource>()),
-    );
-    gh.factory<_i209.AuthRepository>(
-      () => _i1008.AuthRepositoryImpl(gh<_i775.AuthDataSource>()),
+      () async => _i147.ShopRepositoryImpl(
+        gh<_i231.RemoteShopDataSource>(),
+        await getAsync<_i951.LocalShopDataSource>(),
+      ),
     );
     gh.factoryAsync<_i815.GetProductsUseCase>(
       () async =>
@@ -120,6 +116,15 @@ extension GetItInjectableX on _i174.GetIt {
         await getAsync<_i386.RemoveFromWishlistUseCase>(),
         await getAsync<_i158.GetWishlistUseCase>(),
       ),
+    );
+    gh.factory<_i775.AuthDataSource>(
+      () => _i775.AuthDataSourceImpl(
+        gh<_i45.DioClient>(),
+        gh<_i558.FlutterSecureStorage>(),
+      ),
+    );
+    gh.factory<_i209.AuthRepository>(
+      () => _i1008.AuthRepositoryImpl(gh<_i775.AuthDataSource>()),
     );
     gh.factory<_i14.LogoutUseCase>(
       () => _i14.LogoutUseCase(gh<_i209.AuthRepository>()),

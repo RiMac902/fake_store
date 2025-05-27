@@ -1,7 +1,7 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:fake_store/core/usecase/usecase.dart';
-import 'package:fake_store/feature/shop/domain/entities/cart_entity.dart';
-import 'package:fake_store/feature/shop/domain/entities/product_entity.dart';
 import 'package:fake_store/feature/shop/domain/usecases/add_to_cart_usecase.dart';
 import 'package:fake_store/feature/shop/domain/usecases/add_to_wishlist_usecase.dart';
 import 'package:fake_store/feature/shop/domain/usecases/get_cart_usecasse.dart';
@@ -11,12 +11,15 @@ import 'package:fake_store/feature/shop/domain/usecases/get_products_usecase.dar
 import 'package:fake_store/feature/shop/domain/usecases/get_wishlist_usecase.dart';
 import 'package:fake_store/feature/shop/domain/usecases/remove_from_wishlist.dart';
 import 'package:fake_store/feature/shop/domain/usecases/remove_rom_cart_usecase.dart';
+import 'package:fake_store/feature/shop/presentation/models/cart_item.dart';
+import 'package:fake_store/feature/shop/presentation/models/product_ui_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
+import 'package:collection/collection.dart';
 
+part 'shop_bloc.freezed.dart';
 part 'shop_event.dart';
 part 'shop_state.dart';
-part 'shop_bloc.freezed.dart';
 
 @singleton
 class ShopBloc extends Bloc<ShopEvent, ShopState> {
@@ -30,8 +33,6 @@ class ShopBloc extends Bloc<ShopEvent, ShopState> {
   final RemoveFromWishlistUseCase _removeFromWishlistUseCase;
   final GetWishlistUseCase _getWishlistUseCase;
 
-  final Set<String> _wishlist = {};
-
   ShopBloc(
     this._getProductsUseCase,
     this._getProductUseCase,
@@ -42,7 +43,7 @@ class ShopBloc extends Bloc<ShopEvent, ShopState> {
     this._addToWishlistUseCase,
     this._removeFromWishlistUseCase,
     this._getWishlistUseCase,
-  ) : super(const ShopState.initial()) {
+  ) : super(const ShopState()) {
     on<ShopEvent>((event, emit) async {
       switch (event) {
         case GetProducts():
@@ -67,6 +68,10 @@ class ShopBloc extends Bloc<ShopEvent, ShopState> {
           await _onGetWishlist(event, emit);
         case Started():
           await _onStarted(event, emit);
+        case IncreaseCartQuantity():
+          await _onIncreaseCartQuantity(event, emit);
+        case DecreaseCartQuantity():
+          await _onDecreaseCartQuantity(event, emit);
       }
     });
   }
@@ -76,203 +81,214 @@ class ShopBloc extends Bloc<ShopEvent, ShopState> {
     GetProducts event,
     Emitter<ShopState> emit,
   ) async {
-    emit(const ShopState.loading());
-    final result = await _getProductsUseCase(NoParams());
-    result.fold(
-      (failure) => emit(ShopState.error(failure.message)),
-      (products) => emit(ShopState.productsLoaded(products)),
-    );
+    log('_onGetProducts');
+    emit(state.copyWith(isLoading: true));
+    try {
+      log('getProducts');
+      final productsResult = await _getProductsUseCase.call(NoParams());
+      final wishlistResult = await _getWishlistUseCase.call(NoParams());
+
+      final wishlistIds = wishlistResult.fold(
+        (failure) => <String>{},
+        (wishlistProducts) =>
+            wishlistProducts.map((p) => p.id.toString()).toSet(),
+      );
+
+      log('wishlistIds: $wishlistIds');
+
+      productsResult.fold(
+        (failure) => emit(
+          state.copyWith(isLoading: false, productsError: failure.message),
+        ),
+        (products) => emit(
+          state.copyWith(
+            isLoading: false,
+            products: products
+                .map(
+                  (product) => ProductUiModel(
+                    product: product,
+                    inWishlist: wishlistIds.contains(product.id.toString()),
+                  ),
+                )
+                .toList(),
+          ),
+        ),
+      );
+    } catch (e) {
+      emit(state.copyWith(isLoading: false, productsError: e.toString()));
+    }
   }
 
   Future<void> _onGetProduct(GetProduct event, Emitter<ShopState> emit) async {
-    emit(const ShopState.loading());
-    final result = await _getProductUseCase(event.id);
-    result.fold(
-      (failure) => emit(ShopState.error(failure.message)),
-      (product) => emit(ShopState.productLoaded(product)),
-    );
+    try {
+      final product = await _getProductUseCase.call(event.id);
+      product.fold(
+        (failure) => emit(
+          state.copyWith(isLoading: false, productsError: failure.message),
+        ),
+        (product) => emit(
+          state.copyWith(
+            isLoading: false,
+            product: ProductUiModel(product: product, inWishlist: false),
+          ),
+        ),
+      );
+    } catch (e) {
+      emit(state.copyWith(isLoading: false, productsError: e.toString()));
+    }
   }
 
   // --- CARTS ---
   Future<void> _onGetCarts(GetCarts event, Emitter<ShopState> emit) async {
-    emit(const ShopState.loading());
-    final result = await _getCartsUseCase(NoParams());
-    result.fold(
-      (failure) => emit(ShopState.error(failure.message)),
-      (carts) => emit(ShopState.cartsLoaded(carts)),
+    try {
+      final cartsResult = await _getCartsUseCase.call(NoParams());
+      cartsResult.fold(
+        (failure) => emit(state.copyWith(cartError: failure.message)),
+        (carts) => emit(
+          state.copyWith(
+            cart: carts
+                .expand((cartEntity) {
+                  return cartEntity.products.map((cartProduct) {
+                    final productUi = state.products.firstWhereOrNull(
+                      (p) => p.product.id == cartProduct.productId,
+                    );
+                    return productUi != null
+                        ? CartItem(product: productUi, quantity: cartProduct.quantity)
+                        : null;
+                  });
+                })
+                .whereType<CartItem>()
+                .toList(),
+          ),
+        ),
+      );
+    } catch (e) {
+      emit(state.copyWith(cartError: e.toString()));
+    }
+  }
+
+  Future<void> _onIncreaseCartQuantity(
+    IncreaseCartQuantity event,
+    Emitter<ShopState> emit,
+  ) async {
+    final cart = List<CartItem>.from(state.cart);
+    final index = cart.indexWhere(
+      (item) => item.product.product.id.toString() == event.productId,
     );
+    if (index != -1) {
+      cart[index] = cart[index].copyWith(quantity: cart[index].quantity + 1);
+      emit(state.copyWith(cart: cart));
+    }
+  }
+
+  Future<void> _onDecreaseCartQuantity(
+    DecreaseCartQuantity event,
+    Emitter<ShopState> emit,
+  ) async {
+    final cart = List<CartItem>.from(state.cart);
+    final index = cart.indexWhere(
+      (item) => item.product.product.id.toString() == event.productId,
+    );
+    if (index != -1 && cart[index].quantity > 1) {
+      cart[index] = cart[index].copyWith(quantity: cart[index].quantity - 1);
+      emit(state.copyWith(cart: cart));
+    } else if (index != -1 && cart[index].quantity == 1) {
+      cart.removeAt(index);
+      emit(state.copyWith(cart: cart));
+    }
   }
 
   Future<void> _onGetCart(GetCart event, Emitter<ShopState> emit) async {
-    emit(const ShopState.loading());
-    final result = await _getCartUseCase(event.id);
-    result.fold(
-      (failure) => emit(ShopState.error(failure.message)),
-      (cart) => emit(ShopState.cartLoaded(cart)),
-    );
+    try {
+      final cart = await _getCartUseCase.call(event.id);
+      cart.fold(
+        (failure) => emit(state.copyWith(cartError: failure.message)),
+        (cartEntity) {
+          final cartItems = cartEntity.products.map((cartProduct) {
+            final productUi = state.products.firstWhereOrNull(
+              (p) => p.product.id == cartProduct.productId,
+            );
+            return productUi != null
+                ? CartItem(product: productUi, quantity: cartProduct.quantity)
+                : null;
+          }).whereType<CartItem>().toList();
+          emit(state.copyWith(cart: cartItems));
+        },
+      );
+    } catch (e) {
+      emit(state.copyWith(cartError: e.toString()));
+    }
   }
 
   // --- ADD/REMOVE CART ---
   Future<void> _onAddToCart(AddToCart event, Emitter<ShopState> emit) async {
-    emit(const ShopState.loading());
-    final result = await _addToCartUseCase(event.params);
-    result.fold(
-      (failure) => emit(ShopState.error(failure.message)),
-      (cart) {
-        emit(ShopState.cartLoaded(cart));
-        add(const GetProducts());
-      },
+    final product = state.products.firstWhereOrNull(
+      (p) => p.product.id.toString() == event.productId,
     );
+    if (product == null) return;
+
+    final cart = List<CartItem>.from(state.cart);
+    final index = cart.indexWhere(
+      (item) => item.product.product.id.toString() == event.productId,
+    );
+
+    if (index == -1) {
+      cart.add(CartItem(product: product, quantity: 1));
+    } else {
+      cart[index] = cart[index].copyWith(quantity: cart[index].quantity + 1);
+    }
+    emit(state.copyWith(cart: cart));
   }
 
   Future<void> _onRemoveFromCart(
     RemoveFromCart event,
     Emitter<ShopState> emit,
   ) async {
-    // Get current cart
-    final cartsResult = await _getCartsUseCase(NoParams());
-    if (cartsResult.isLeft()) {
-      emit(ShopState.error(cartsResult.fold(
-        (failure) => failure.message,
-        (_) => 'Failed to get carts',
-      )));
-      return;
-    }
-
-    final carts = cartsResult.getOrElse((_) => []);
-    if (carts.isEmpty) {
-      emit(const ShopState.error('No cart found'));
-      return;
-    }
-
-    final currentCart = carts.where((cart) => cart.userId == 1).isNotEmpty
-        ? carts.firstWhere((cart) => cart.userId == 1)
-        : null;
-    
-    if (currentCart == null) {
-      emit(const ShopState.error('No cart found'));
-      return;
-    }
-
-    final updatedProducts = currentCart.products
-        .where((product) => product.productId.toString() != event.id)
+    final cart = state.cart
+        .where((item) => item.product.product.id.toString() != event.productId)
         .toList();
-
-    if (updatedProducts.isEmpty) {
-      final result = await _removeFromCartUseCase(event.id);
-      result.fold(
-        (failure) => emit(ShopState.error(failure.message)),
-        (_) {
-          emit(const ShopState.cartRemoved());
-          add(const GetProducts());
-        },
-      );
-      return;
-    }
-
-    final params = AddToCartParams(
-      userId: currentCart.userId,
-      date: DateTime.now().toIso8601String(),
-      products: updatedProducts,
-    );
-
-    final result = await _addToCartUseCase(params);
-    result.fold(
-      (failure) => emit(ShopState.error(failure.message)),
-      (cart) {
-        emit(ShopState.cartUpdated(cart));
-        add(const GetProducts());
-      },
-    );
+    emit(state.copyWith(cart: cart));
   }
 
   // --- CART QUANTITY ---
   Future<void> _onUpdateCartQuantity(
     UpdateCartQuantity event,
     Emitter<ShopState> emit,
-  ) async {
-    // Get current cart
-    final cartsResult = await _getCartsUseCase(NoParams());
-    if (cartsResult.isLeft()) {
-      emit(ShopState.error(cartsResult.fold(
-        (failure) => failure.message,
-        (_) => 'Failed to get carts',
-      )));
-      return;
-    }
-
-    final carts = cartsResult.getOrElse((_) => []);
-    if (carts.isEmpty) {
-      emit(const ShopState.error('No cart found'));
-      return;
-    }
-
-    final currentCart = carts.where((cart) => cart.userId == 1).isNotEmpty
-        ? carts.firstWhere((cart) => cart.userId == 1)
-        : null;
-    
-    if (currentCart == null) {
-      emit(const ShopState.error('No cart found'));
-      return;
-    }
-
-    if (event.quantity <= 0) {
-      await _onRemoveFromCart(RemoveFromCart(event.productId.toString()), emit);
-      add(const GetProducts());
-      return;
-    }
-
-    final updatedProducts = currentCart.products.map((product) {
-      if (product.productId == event.productId) {
-        return CartProductEntity(
-          productId: product.productId,
-          quantity: event.quantity,
-        );
-      }
-      return product;
-    }).toList();
-
-    final params = AddToCartParams(
-      userId: currentCart.userId,
-      date: DateTime.now().toIso8601String(),
-      products: updatedProducts,
-    );
-
-    final result = await _addToCartUseCase(params);
-    result.fold(
-      (failure) => emit(ShopState.error(failure.message)),
-      (cart) {
-        emit(ShopState.cartUpdated(cart));
-        add(const GetProducts());
-      },
-    );
-  }
-
-  // --- WISHLIST ---
-  Future<void> _syncWishlistFromPrefs() async {
-    final wishlist = await _getWishlistUseCase(NoParams());
-    wishlist.fold(
-      (failure) => _wishlist.clear(),
-      (products) {
-        _wishlist
-          ..clear()
-          ..addAll(products.map((e) => e.id.toString()));
-      },
-    );
-  }
+  ) async {}
 
   Future<void> _onAddToWishlist(
     AddToWishlist event,
     Emitter<ShopState> emit,
   ) async {
-    emit(const ShopState.loading());
     try {
-      await _addToWishlistUseCase(event.id);
-      await _syncWishlistFromPrefs();
-      emit(const ShopState.wishlistUpdated());
-      add(const GetWishlist());
+      await _addToWishlistUseCase.call(event.id);
+
+      final updatedWishlistIds = {
+        ...state.wishlist.map((p) => p.product.id.toString()),
+        event.id,
+      };
+
+      final updatedProducts = state.products
+          .map(
+            (ui) => ui.copyWith(
+              inWishlist: updatedWishlistIds.contains(ui.product.id.toString()),
+            ),
+          )
+          .toList();
+
+      final wishlistUi = updatedProducts
+          .where((ui) => updatedWishlistIds.contains(ui.product.id.toString()))
+          .toList();
+
+      emit(
+        state.copyWith(
+          products: updatedProducts,
+          wishlist: wishlistUi,
+          wishlistError: null,
+        ),
+      );
     } catch (e) {
-      emit(ShopState.error(e.toString()));
+      emit(state.copyWith(wishlistError: e.toString()));
     }
   }
 
@@ -280,14 +296,34 @@ class ShopBloc extends Bloc<ShopEvent, ShopState> {
     RemoveFromWishlist event,
     Emitter<ShopState> emit,
   ) async {
-    emit(const ShopState.loading());
     try {
-      await _removeFromWishlistUseCase(event.id);
-      await _syncWishlistFromPrefs();
-      emit(const ShopState.wishlistUpdated());
-      add(const GetWishlist());
+      await _removeFromWishlistUseCase.call(event.id);
+      final updatedWishlistIds = state.wishlist
+          .map((p) => p.product.id.toString())
+          .where((id) => id != event.id)
+          .toSet();
+
+      final updatedProducts = state.products
+          .map(
+            (ui) => ui.copyWith(
+              inWishlist: updatedWishlistIds.contains(ui.product.id.toString()),
+            ),
+          )
+          .toList();
+
+      final wishlistUi = updatedProducts
+          .where((ui) => updatedWishlistIds.contains(ui.product.id.toString()))
+          .toList();
+
+      emit(
+        state.copyWith(
+          products: updatedProducts,
+          wishlist: wishlistUi,
+          wishlistError: null,
+        ),
+      );
     } catch (e) {
-      emit(ShopState.error(e.toString()));
+      emit(state.copyWith(wishlistError: e.toString()));
     }
   }
 
@@ -295,29 +331,25 @@ class ShopBloc extends Bloc<ShopEvent, ShopState> {
     GetWishlist event,
     Emitter<ShopState> emit,
   ) async {
-    emit(const ShopState.loading());
     try {
-      final products = await _getWishlistUseCase(NoParams());
-      products.fold(
-        (failure) => emit(ShopState.error(failure.message)),
-        (products) {
-          emit(ShopState.wishlistLoaded(products));
-          _wishlist
-            ..clear()
-            ..addAll(products.map((e) => e.id.toString()));
-        },
+      final wishlistResult = await _getWishlistUseCase.call(NoParams());
+      wishlistResult.fold(
+        (failure) => emit(state.copyWith(wishlistError: failure.message)),
+        (wishlistProducts) => emit(
+          state.copyWith(
+            wishlist: wishlistProducts
+                .map((p) => ProductUiModel(product: p, inWishlist: true))
+                .toList(),
+          ),
+        ),
       );
     } catch (e) {
-      emit(ShopState.error(e.toString()));
+      emit(state.copyWith(wishlistError: e.toString()));
     }
   }
 
-  bool isInWishlist(String productId) => _wishlist.contains(productId);
-
   Future<void> _onStarted(Started event, Emitter<ShopState> emit) async {
-    await _onGetProducts(const GetProducts(), emit);
-    await _onGetCarts(const GetCarts(), emit);
-    await _onGetWishlist(const GetWishlist(), emit);
-    await _syncWishlistFromPrefs();
+    add(const GetProducts());
+    add(const GetWishlist());
   }
 }

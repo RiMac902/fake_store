@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:fake_store/core/components/app_text.dart';
 import 'package:fake_store/core/components/count_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -15,7 +14,7 @@ class CartCard extends StatelessWidget {
   final VoidCallback onDecrease;
 
   const CartCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.image,
     required this.price,
@@ -23,7 +22,7 @@ class CartCard extends StatelessWidget {
     required this.onDelete,
     required this.onIncrease,
     required this.onDecrease,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

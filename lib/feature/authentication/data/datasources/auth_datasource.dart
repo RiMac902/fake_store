@@ -42,7 +42,6 @@ class AuthDataSourceImpl implements AuthDataSource {
   @override
   Future<bool> isLoggedIn() async {
     final token = await _storage.read(key: _tokenKey);
-    print('token: $token');
     return token != null && token.isNotEmpty;
   }
 }

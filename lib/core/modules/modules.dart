@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 @module
 abstract class Modules {
   @singleton
-  Future<SharedPreferences> get sharedPreferences => SharedPreferences.getInstance();
+   Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
 
   @singleton
   FlutterSecureStorage get secureStorage => const FlutterSecureStorage();
