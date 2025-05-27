@@ -1,4 +1,4 @@
-import 'package:fake_store/core/data/dummy_data.dart';
+import 'package:fake_store/core/network/dio_client.dart';
 import 'package:injectable/injectable.dart';
 import 'package:fake_store/feature/shop/data/models/product_model.dart';
 import 'package:fake_store/feature/shop/data/models/cart_model.dart';
@@ -18,40 +18,34 @@ abstract interface class RemoteShopDataSource {
 
 @Injectable(as: RemoteShopDataSource)
 class RemoteShopDataSourceImpl implements RemoteShopDataSource {
+  final DioClient _dioClient;
+
+  RemoteShopDataSourceImpl(this._dioClient);
+
   @override
   Future<List<ProductModel>> getProducts() async {
-    await Future.delayed(const Duration(milliseconds: 800));
-    return productsData
-        .map((json) => ProductModel.fromJson(json))
-        .toList();
+    final response = await _dioClient.get('products');
+    final data = response.data as List;
+    return data.map((json) => ProductModel.fromJson(json)).toList();
   }
 
   @override
   Future<ProductModel> getProduct(String id) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    final product = productsData.firstWhere(
-      (product) => product['id'].toString() == id,
-      orElse: () => throw Exception('Product not found'),
-    );
-    return ProductModel.fromJson(product);
+    final response = await _dioClient.get('products/$id');
+    return ProductModel.fromJson(response.data);
   }
 
   @override
   Future<List<CartModel>> getCarts() async {
-    await Future.delayed(const Duration(milliseconds: 800));
-    return cartsData
-        .map((json) => CartModel.fromJson(json))
-        .toList();
+    final response = await _dioClient.get('carts');
+    final data = response.data as List;
+    return data.map((json) => CartModel.fromJson(json)).toList();
   }
 
   @override
   Future<CartModel> getCart(String id) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    final cart = cartsData.firstWhere(
-      (cart) => cart['id'].toString() == id,
-      orElse: () => throw Exception('Cart not found'),
-    );
-    return CartModel.fromJson(cart);
+    final response = await _dioClient.get('carts/$id');
+    return CartModel.fromJson(response.data);
   }
 
   @override
@@ -60,9 +54,7 @@ class RemoteShopDataSourceImpl implements RemoteShopDataSource {
     required String date,
     required List<CartProductModel> products,
   }) async {
-    await Future.delayed(const Duration(milliseconds: 800));
-    return CartModel.fromJson({
-      "id": DateTime.now().millisecondsSinceEpoch,
+    final response = await _dioClient.post('carts', data: {
       "userId": userId,
       "date": date,
       "products": products.map((e) => {
@@ -70,10 +62,11 @@ class RemoteShopDataSourceImpl implements RemoteShopDataSource {
         "quantity": e.quantity,
       }).toList(),
     });
+    return CartModel.fromJson(response.data);
   }
 
   @override
   Future<void> removeFromCart(String id) async {
-    await Future.delayed(const Duration(milliseconds: 500));
+    await _dioClient.delete('carts/$id');
   }
 }

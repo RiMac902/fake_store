@@ -56,11 +56,11 @@ extension GetItInjectableX on _i174.GetIt {
         await getAsync<_i460.SharedPreferences>(),
       ),
     );
-    gh.factory<_i231.RemoteShopDataSource>(
-      () => _i231.RemoteShopDataSourceImpl(),
-    );
     gh.singleton<_i45.DioClient>(
       () => _i45.DioClient(gh<_i558.FlutterSecureStorage>()),
+    );
+    gh.factory<_i231.RemoteShopDataSource>(
+      () => _i231.RemoteShopDataSourceImpl(gh<_i45.DioClient>()),
     );
     gh.factoryAsync<_i1036.ShopRepository>(
       () async => _i147.ShopRepositoryImpl(
