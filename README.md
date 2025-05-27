@@ -4,7 +4,7 @@ A modern e-commerce application built with Flutter, supporting multiple platform
 
 
 ## UI Components
-
+<img width="972" alt="Screenshot 2025-05-28 at 12 43 48 AM" src="https://github.com/user-attachments/assets/6c0ca17b-c065-4c89-82cd-329278f9a6fe" />
 **The application includes a modern set of reusable UI components:**
 - Multiple button styles (primary, secondary, outline, ghost, etc.)
 - Responsive price and cart widgets
@@ -176,3 +176,10 @@ Run the following command to generate code:
 ```bash
 flutter pub run build_runner build --delete-conflicting-outputs
 ```
+<img width="496" alt="Screenshot 2025-05-28 at 12 45 14 AM" src="https://github.com/user-attachments/assets/b71d7731-448c-4ead-9fe2-ae816de67473" />
+<img width="490" alt="Screenshot 2025-05-28 at 12 45 27 AM" src="https://github.com/user-attachments/assets/f7002ede-92f2-43d1-b871-e3e42ccf53d7" />
+<img width="499" alt="Screenshot 2025-05-28 at 12 45 40 AM" src="https://github.com/user-attachments/assets/73a4d490-4bae-4ea7-9c76-72d368eb7cab" />
+<img width="491" alt="Screenshot 2025-05-28 at 12 46 04 AM" src="https://github.com/user-attachments/assets/de1f38c5-e8ce-4d54-9ac0-075c908c9a9b" />
+<img width="481" alt="Screenshot 2025-05-28 at 12 46 29 AM" src="https://github.com/user-attachments/assets/b166c704-8a06-4ba1-b314-b68e357e9b3b" />
+<img width="481" alt="Screenshot 2025-05-28 at 12 46 40 AM" src="https://github.com/user-attachments/assets/defc6907-fca9-4d66-9b6e-09f8d9d79fe7" />
+
